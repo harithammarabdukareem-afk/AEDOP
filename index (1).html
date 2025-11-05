@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRID - بوت التداول الذكي</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        @keyframes hero-glow {
+            0% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+        }
+
+        @keyframes special-offer-glow {
+            0% { 
+                box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 25px rgba(34, 197, 94, 0.8);
+                transform: scale(1.02);
+            }
+            100% { 
+                box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
+                transform: scale(1);
+            }
+        }
+
+        .hero-bg {
+            background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
+        }
+
+        .hero-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 15px;
+        }
+
+        .hero-button {
+            background: linear-gradient(45deg, #10b981, #047857);
+            border: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .hero-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .hero-modal {
+            background: rgba(6, 78, 59, 0.95);
+            border: 2px solid #10b981;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .hero-input:focus {
+            border-color: #34d399;
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+            outline: none;
+        }
+
+        .special-offer-btn {
+            background: linear-gradient(45deg, #10b981, #34d399);
+            animation: special-offer-glow 2s infinite;
+        }
+
+        .badge-new {
+            background: linear-gradient(45deg, #f59e0b, #fbbf24);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .trades-container {
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .trade-item {
+            transition: all 0.3s ease;
+            border-right: 3px solid #10b981;
+        }
+
+        /* Chat Styles */
+        .live-chat-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 320px;
+            z-index: 1000;
+        }
+
+        .chat-header {
+            background: linear-gradient(45deg, #10b981, #047857);
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+        }
+
+        .chat-body {
+            background: rgba(6, 78, 59, 0.95);
+            border: 1px solid #10b981;
+            border-radius: 0 0 10px 10px;
+            max-height: 400px;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .exchange-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .binance { background: #f0b90b; color: black; }
+        .whitebit { background: #21bca2; color: white; }
+        .huobi { background: #2872ff; color: white; }
+        .coinbase { background: #0052ff; color: white; }
+        .kraken { background: #5846ad; color: white; }
+        .kucoin { background: #26af90; color: white; }
+        .bitmart { background: #0c6aff; color: white; }
+        .gate { background: #8050e6; color: white; }
+        .bitget { background: #0c6aff; color: white; }
+        .poloniex { background: #6c5ce7; color: white; }
+
+        .sideway-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #6b7280;
+            margin-left: 5px;
+        }
+        
+        .setting-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .setting-option:hover {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: #10b981;
+        }
+        
+        .setting-option.active {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+        }
+        
+        .address-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 0;
+            word-break: break-all;
+            font-family: monospace;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        
+        .step.active {
+            background: #10b981;
+            color: white;
+        }
+        
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 5px;
+            align-self: center;
+        }
+        
+        .step-line.active {
+            background: #10b981;
+        }
+
+        .deposit-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .setting-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .setting-toggle:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .toggle-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-icon.active {
+            color: #10b981;
+        }
+
+        .toggle-checkbox {
+            display: none;
+        }
+    </style>
+</head>
+<body class="hero-bg text-gray-100 min-h-screen">
+    
+    <!-- Promo Banner -->
+    <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-center py-3 px-4 text-lg font-bold">
+        🚀 عرض خاص: عوائد تصل إلى 8% يومياً - لمدة محدودة فقط! 💰
+    </div>
+
+    <!-- Header -->
+    <header class="bg-slate-900/80 py-4 fixed w-full z-50 backdrop-blur-xl border-b border-emerald-500">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-12 h-12 bg-emerald-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-robot text-white text-xl"></i>
+                </div>
+                <span class="text-2xl font-bold text-white">GRID</span>
+            </div>
+            <nav class="hidden md:flex space-x-8 space-x-reverse">
+                <a href="#starttrading" class="hover:text-emerald-300 transition-colors">بدء التداول</a>
+                <a href="#activity" class="hover:text-emerald-300 transition-colors">النشاط المباشر</a>
+                <a href="#contact" class="hover:text-emerald-300 transition-colors">الدعم</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                <span class="text-emerald-400">GRID</span> - بوت التداول الذكي<br>
+                <span class="text-xl text-emerald-300 mt-4">محرك تنبؤات الأسواق المدعوم بالذكاء الاصطناعي</span>
+            </h1>
+            <button onclick="showTradeModal()" class="hero-button px-8 py-4 text-lg font-semibold">
+                <i class="fas fa-play mr-2"></i>بدء التداول
+            </button>
+        </div>
+    </section>
+
+    <!-- Live Activity Section -->
+    <section id="activity" class="container mx-auto mb-16 px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Live Trades -->
+            <div class="hero-card p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold"><i class="fas fa-chart-line mr-2 text-emerald-500"></i>النشاط المباشر - Binance</h3>
+                    <span class="text-emerald-400 text-sm"><i class="fas fa-circle animate-pulse mr-1 text-green-500"></i>مباشر</span>
+                </div>
+                <div id="live-trades" class="trades-container space-y-3">
+                    <!-- Trading activities will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Recent Profits -->
+            <div class="hero-card p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold"><i class="fas fa-wallet mr-2 text-emerald-500"></i>أرباح المستخدمين</h3>
+                    <span class="text-sm text-emerald-400">أداء 24 ساعة</span>
+                </div>
+                <div id="recent-profits" class="trades-container space-y-3">
+                    <!-- Profit activities will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-slate-800/50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">ميزاتنا المميزة</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-brain text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">ذكاء اصطناعي متقدم</h3>
+                    <p class="text-gray-300">تحليل السوق باستخدام أحدث خوارزميات الذكاء الاصطناعي</p>
+                </div>
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">أمان عالي</h3>
+                    <p class="text-gray-300">حماية متقدمة لأموالك وبياناتك</p>
+                </div>
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-bolt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">سرعة فائقة</h3>
+                    <p class="text-gray-300">تنفيذ الصفقات في أجزاء من الثانية</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">تواصل معنا</h2>
+                <p class="text-gray-300 max-w-2xl mx-auto">
+                    فريق الدعم لدينا جاهز لمساعدتك على مدار الساعة
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                <div class="hero-card p-6 text-center">
+                    <div class="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-envelope text-emerald-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">البريد الإلكتروني</h3>
+                    <p class="text-emerald-300">grid.bitsgp@proton.me</p>
+                </div>
+
+                <div class="hero-card p-6 text-center">
+                    <div class="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-phone text-emerald-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">الدعم الفني</h3>
+                    <p class="text-emerald-300">متاح 24/7</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trading Modal -->
+    <div id="trade-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50">
+        <div class="hero-modal w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">بدء التداول</h2>
+                <button onclick="closeModal()" class="text-emerald-400 hover:text-white text-xl">&times;</button>
+            </div>
+
+            <div class="mb-6">
+                <label class="block mb-3 text-emerald-300">المبلغ (USDT)</label>
+                <input type="number" id="amount-input" value="1000" 
+                       class="w-full hero-input px-4 py-3" min="100" max="100000">
+                <div class="text-sm text-emerald-400 mt-2">
+                    الحد الأدنى: $100 • الحد الأقصى: $100,000
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block mb-3 text-white">مدة التداول</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="selectPeriod(1)" 
+                            class="special-offer-btn py-3 rounded-lg text-white font-bold relative">
+                        <div class="badge-new">جديد</div>
+                        1 يوم<br>
+                        <span class="text-sm">8%/day</span>
+                    </button>
+                    <button onclick="selectPeriod(7)" 
+                            class="bg-emerald-500/10 hover:bg-emerald-500/20 py-3 rounded-lg border border-emerald-500/30 text-emerald-300">
+                        7 أيام<br><span class="text-emerald-400">3%/day</span>
+                    </button>
+                    <button onclick="selectPeriod(15)" 
+                            class="bg-emerald-500/10 hover:bg-emerald-500/20 py-3 rounded-lg border border-emerald-500/30 text-emerald-300">
+                        15 يوم<br><span class="text-emerald-400">4%/day</span>
+                    </button>
+                    <button onclick="selectPeriod(30)" 
+                            class="bg-emerald-500/10 hover:bg-emerald-500/20 py-3 rounded-lg border border-emerald-500/30 text-emerald-300">
+                        30 يوم<br><span class="text-emerald-400">5%/day</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white/10 p-4 rounded-lg mb-6 border border-emerald-500/20">
+                <div class="flex justify-between text-emerald-400">
+                    <span>العائد المتوقع:</span>
+                    <span id="projected-profit" class="font-bold">$0.00</span>
+                </div>
+            </div>
+
+            <button onclick="showSettingsModal()" class="w-full hero-button py-3 text-lg">
+                بدء التداول <i class="fas fa-arrow-left mr-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50">
+        <div class="hero-modal w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">إعدادات التداول</h2>
+                <button onclick="closeSettingsModal()" class="text-emerald-400 hover:text-white text-xl">&times;</button>
+            </div>
+
+            <div class="step-indicator">
+                <div class="step active">1</div>
+                <div class="step-line"></div>
+                <div class="step">2</div>
+                <div class="step-line"></div>
+                <div class="step">3</div>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-4 text-emerald-300">اختر استراتيجية التداول</h3>
+                
+                <div class="setting-option active" onclick="selectStrategy('conservative')">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold">استراتيجية محافظة</h4>
+                            <p class="text-sm text-gray-300 mt-1">مخاطر منخفضة، أرباح مستقرة</p>
+                        </div>
+                        <i class="fas fa-check-circle text-emerald-400"></i>
+                    </div>
+                </div>
+                
+                <div class="setting-option" onclick="selectStrategy('balanced')">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold">استراتيجية متوازنة</h4>
+                            <p class="text-sm text-gray-300 mt-1">توازن بين المخاطر والأرباح</p>
+                        </div>
+                        <i class="fas fa-circle text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <div class="setting-option" onclick="selectStrategy('aggressive')">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold">استراتيجية عدوانية</h4>
+                            <p class="text-sm text-gray-300 mt-1">مخاطر عالية، أرباح محتملة كبيرة</p>
+                        </div>
+                        <i class="fas fa-circle text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-4 text-emerald-300">إعدادات إضافية</h3>
+                
+                <div class="setting-toggle">
+                    <div class="toggle-label" onclick="toggleSetting('stopLoss')">
+                        <div class="toggle-icon active" id="stopLoss-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <span>وقف الخسارة التلقائي</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer toggle-checkbox" id="stopLoss-checkbox" checked>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </label>
+                </div>
+                
+                <div class="setting-toggle">
+                    <div class="toggle-label" onclick="toggleSetting('takeProfit')">
+                        <div class="toggle-icon active" id="takeProfit-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span>جني الأرباح التلقائي</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer toggle-checkbox" id="takeProfit-checkbox" checked>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </label>
+                </div>
+                
+                <div class="setting-toggle">
+                    <div class="toggle-label" onclick="toggleSetting('nightTrading')">
+                        <div class="toggle-icon" id="nightTrading-icon">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <span>التداول الليلي</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer toggle-checkbox" id="nightTrading-checkbox">
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </label>
+                </div>
+            </div>
+
+            <button onclick="showDepositModal()" class="w-full hero-button py-3 text-lg">
+                تأكيد الإعدادات والمتابعة للإيداع <i class="fas fa-arrow-left mr-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="deposit-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50">
+        <div class="hero-modal w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">إيداع الأموال</h2>
+                <button onclick="closeDepositModal()" class="text-emerald-400 hover:text-white text-xl">&times;</button>
+            </div>
+
+            <div class="step-indicator">
+                <div class="step">1</div>
+                <div class="step-line active"></div>
+                <div class="step active">2</div>
+                <div class="step-line active"></div>
+                <div class="step active">3</div>
+            </div>
+
+            <div class="text-center mb-6">
+                <h3 class="text-lg font-bold mb-4 text-emerald-300">إيداع USDT عبر شبكة TRC20</h3>
+                <p class="text-gray-300 mb-4">يرجى إرسال المبلغ المطلوب إلى العنوان التالي:</p>
+                
+                <div class="deposit-info">
+                    <div class="address-box">
+                        <div class="flex justify-between items-center">
+                            <code id="trc-address" class="text-sm">TQ7VqNcsYAM12EMX9cjzuq8wuA15EtP2FM</code>
+                            <button onclick="copyAddress()" class="text-emerald-400 hover:text-emerald-300 mr-2">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-3 mb-4">
+                    <p class="text-yellow-300 text-sm">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        تأكد من استخدام شبكة TRC20 فقط. الإرسال عبر شبكات أخرى قد يؤدي إلى فقدان الأموال.
+                    </p>
+                </div>
+                
+                <div class="bg-white/10 p-3 rounded-lg mb-4">
+                    <p class="text-emerald-300 font-bold">المبلغ المطلوب: <span id="deposit-amount">$1,000</span> USDT</p>
+                    <p class="text-gray-300 text-sm mt-1">سيتم تفعيل البوت تلقائياً بعد تأكيد الإيداع</p>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="backToSettings()" class="flex-1 bg-emerald-500/10 hover:bg-emerald-500/20 py-3 rounded-lg border border-emerald-500/30 text-emerald-300 transition-colors">
+                    <i class="fas fa-arrow-right mr-2"></i>رجوع
+                </button>
+                <button onclick="confirmDeposit()" class="flex-1 hero-button py-3 text-lg">
+                    تأكيد الإيداع <i class="fas fa-check-circle ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50">
+        <div class="hero-modal w-full max-w-md p-6 text-center">
+            <div class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-check text-white text-2xl"></i>
+            </div>
+            
+            <h2 class="text-2xl font-bold mb-4 text-emerald-300">تم بدء التداول بنجاح!</h2>
+            
+            <p class="text-gray-300 mb-6">
+                تم استلام طلبك بنجاح. سيبدأ البوت في التداول تلقائياً بعد تأكيد الإيداع.
+                يمكنك متابعة أداء التداول من خلال لوحة التحكم.
+            </p>
+            
+            <div class="bg-white/10 p-4 rounded-lg mb-6 border border-emerald-500/20">
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-300">المبلغ:</span>
+                    <span class="font-bold text-emerald-300" id="success-amount">$1,000</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-300">المدة:</span>
+                    <span class="font-bold text-emerald-300" id="success-period">7 أيام</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-300">الإستراتيجية:</span>
+                    <span class="font-bold text-emerald-300" id="success-strategy">محافظة</span>
+                </div>
+            </div>
+            
+            <button onclick="closeAllModals()" class="w-full hero-button py-3 text-lg">
+                حسناً، فهمت <i class="fas fa-thumbs-up ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Live Chat Widget -->
+    <div class="live-chat-container">
+        <div class="chat-header p-3 flex justify-between items-center" onclick="toggleChat()">
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <div class="online-dot"></div>
+                <span class="font-bold">الدردشة المباشرة</span>
+            </div>
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <span class="text-sm bg-green-500 px-2 py-1 rounded-full" id="online-count">87</span>
+                <i class="fas fa-chevron-down text-sm"></i>
+            </div>
+        </div>
+        
+        <div class="chat-body hidden" id="chat-body">
+            <div class="chat-messages p-3" id="chat-messages">
+                <!-- Messages will be inserted here -->
+            </div>
+            
+            <div class="p-3 border-t border-emerald-500">
+                <div class="flex space-x-2 space-x-reverse">
+                    <input type="text" id="chat-input" class="flex-1 hero-input px-3 py-2 text-sm" 
+                           placeholder="اكتب رسالتك..." maxlength="100">
+                    <button onclick="sendMessage()" class="bg-emerald-500 hover:bg-emerald-600 px-3 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Trading Logic
+        let selectedPeriod = 7;
+        let investmentAmount = 1000;
+        let selectedStrategy = 'conservative';
+
+        const rates = {
+            1: 8.0,
+            7: 3.0,
+            15: 4.0,
+            30: 5.0
+        };
+
+        // بيانات التداولات المطلوبة
+        const tradingData = [
+            { exchange: "binance", pair: "TRX / USDT", change: 0.55 },
+            { exchange: "whitebit", pair: "USDT / EUR", change: 0.54 },
+            { exchange: "huobi", pair: "BTT / USDT", change: 0.53 },
+            { exchange: "coinbase", pair: "BTC / USDT", change: 0.53 },
+            { exchange: "kraken", pair: "BTC / USD", change: 0.52 },
+            { exchange: "kraken", pair: "BTC / USDC", change: 0.50 },
+            { exchange: "kraken", pair: "BTC / EUR", change: 0.50 },
+            { exchange: "kraken", pair: "BTC / GBP", change: 0.49 },
+            { exchange: "kucoin", pair: "KCS / USDT", change: 0.48 },
+            { exchange: "bitmart", pair: "FORM / USDT", change: 0.48 },
+            { exchange: "kraken", pair: "BTC / CAD", change: 0.47 },
+            { exchange: "bitmart", pair: "BTC / USDT", change: 0.46 },
+            { exchange: "bitmart", pair: "BTC / USDC", change: 0.45 },
+            { exchange: "gate", pair: "BTC / USDT", change: 0.44 },
+            { exchange: "binance", pair: "USDC / BRL", change: 0.42 },
+            { exchange: "bitget", pair: "USDT / EUR", change: 0.41 },
+            { exchange: "binance", pair: "PAXG / USDC", change: 0.39 },
+            { exchange: "kucoin", pair: "PAXG / USDT", change: 0.38 },
+            { exchange: "whitebit", pair: "USDC / EUR", change: 0.35 },
+            { exchange: "gate", pair: "TRX / USDT", change: 0.33 },
+            { exchange: "binance", pair: "PAXG / USDT", change: 0.32 },
+            { exchange: "binance", pair: "USDT / BRL", change: 0.30 },
+            { exchange: "bitmart", pair: "TRX / USDT", change: 0.20 },
+            { exchange: "poloniex", pair: "NFT / USDT", change: 0.16 },
+            { exchange: "binance", pair: "USDT / TRY", change: 0.11 },
+            { exchange: "binance", pair: "FDUSD / TRY", change: 0.03 },
+            { exchange: "whitebit", pair: "USDT / GBP", change: 0.02 }
+        ];
+
+        // التعليقات العربية المطلوبة (للدردشة فقط)
+        const arabicComments = [
+            "هلا شباب، مين جرب البوت اليوم؟",
+            "والله ربحني اليوم شوي، طلعت 2% بس",
+            "حد يعرف وقت تأخير السحب؟",
+            "يا الله سويت إيداع وخفت يروح 😂",
+            "يا جماعة التوصية هذي مناسبة للسكالب؟",
+            "هههههه صوت الإعلامية بالموبايل",
+            "يا رب الربح ثابت 🙏",
+            "طيب الحساب المؤكد شلون افعل؟",
+            "شباب، في أحد عنده مشكلة في اللوجين؟",
+            "منو يشرحلي الشارت بسرعة؟",
+            "آآآ اشتريت على طول وطلعت خسارة 😭",
+            "لا لا لا، امس سحبت بدون مشاكل ✅",
+            "يا ريت لو في زر تعليقات صوتية",
+            "حبيت الواجهة الجديدة وايد ناعمة 👍",
+            "هل فيه رسوم على السحب؟",
+            "يا حبيبي، فلوسي راحت وانا ناسي 😅",
+            "شباب، حد يعرف طريقة تفعيل الإشعارات؟",
+            "يلا ورجونا أرباحكم اليوم",
+            "مين معاه توصية قصيرة؟",
+            "مممم، اللزوجة عالية اليوم في السوق",
+            "استنى استنى قبل تفتح صفقة",
+            "صوت الإشعار دايم يرعبني",
+            "يا سلام على السرعة في التنفيذ",
+            "أحد جرب السحب البنكي؟ كم يوم؟",
+            "منورين الحين، شنو آخر أخبار السوق؟",
+            "يا أخي الستوب لوس شغّل معي وخلّصني 🤦",
+            "أي واحد يستخدم حساب تجريبي هنا؟",
+            "وجهي لما الربح يطلع فجأة 😍",
+            "حد يساعدني أفهم الفوليوم؟",
+            "يا ناس، في ربح تلقائي ولا كل شي manual؟",
+            "مين يشارك بتحليل موجة قصيرة؟",
+            "والله اذا استمر هالنتائج بنفلّس 😂",
+            "سلام عليكم ورحمة الله وبركاته",
+            "يا عيني على الإشعارات الكثيرة اليوم 🔔🔔",
+            "يا ريت لو فيه بوت يعلمنا استراتيجيات 😅",
+            "شباب، كيف أغير العملة الأساسية؟",
+            "أحد من مصر؟ سلامو عليكم 🇪🇬",
+            "شباب سعودي محتاجكم، نصيحة صغيرة؟ 🇸🇦",
+            "يا ناس، لا تستثمرون فلوس مهمة بدون تجربة",
+            "طبعا لازم تجرب الديمو قبل الحقيقي ✅",
+            "شكراً للفريق، الواجهة تحسنت كثير 👏",
+            "مين يرد علي؟ السحوبات معلّقة عندي",
+            "يلا نعمل جلسة نقاش عن إدارة راس المال",
+            "أنا حاطط تريلينغ ستوب؛ يخدم كلامه؟",
+            "يا جماعة، ليش الأسعار متقلبة اليوم؟",
+            "حد يرسل لي لقطة شاشة للصفقة؟",
+            "ههههه يا شباب طلعلي إشعار غلط 😅",
+            "مين يعرف اسئلة الدعم عادةً تأخذ وقت؟",
+            "انبسطت من التنبيهات الصوتية الجديدة",
+            "والله لو يغلقلي صفقة وهو على ربح 🥲",
+            "مين يستعمل بوت مع إعدادات متقدمة؟",
+            "يمعودين، شرحوا لي وضع الهيدج بخطوات",
+            "هلا من المغرب، السلام عليكم 🇲🇦",
+            "شباب، هل في حد حصل على بلوك مؤقت؟",
+            "أصوات الناس هنا مثل السوق حقنا 😂",
+            "لا أقدر أصدق هالربح الصبح💰",
+            "يلا خلّونا نشارك شارتات مفيدة",
+            "هل البوت يدعم أوامر مشروطة؟",
+            "يا رب لا يصير سحب مش مُعالج 🙏",
+            "يا ناس، أي واحد معه تجربة سحب بالبطاقة؟",
+            "حد يحكيلي عن رسوم التحويل الدولي؟",
+            "توني فاتح الحساب، وين التعلم؟",
+            "مين يبدي بث تعليمي بسيط الآن؟",
+            "حسيت الفرق لما غيّرت الإعدادات للـTP",
+            "منو جرب الـcopy trading هنا؟ كيف كانت النتيجة؟",
+            "يا ليت لو في فلتر لصوت الإشعارات 🔕",
+            "يا أخي، اربح أو اخسر المهم نتعلم 🤷",
+            "شباب شدّوا حيلكم، السوق بيتحرك بسرعة",
+            "هههههه ردودكم تجنن 😂😂",
+            "يا ناس خلّوني أجرب صفقة 1 دولار فقط",
+            "سلام شباب، خلي الجو هادي شوي 🙏",
+            "يلا نختبر تنبيهات السعر عند 1.2000",
+            "منورين من الخليج، خبّرونا آخر أخباركم",
+            "الاوامر المعلقة تأخذ وقت للتنفيد؟",
+            "يا شباب، إيميل التفعيل مو واصل لي 😕",
+            "حد يقدر يرسل رابط القوانين؟",
+            "يا عمي، السوق اليوم مجنون 😵‍💫",
+            "والله لو في نمط سهل للمبتدئين يكون ممتاز",
+            "هلا والله، جربت السحب اليوم ونجح ✅",
+            "شباب حبيت زر الـanalytics، مرتب 👌",
+            "واحد يقول لي خليه على طول، الثاني يقول خلي ستوب 😅",
+            "صوت هالرسالة يذكرني بالمضاربات القديمة 📢",
+            "منورين، حبيت الفلتر الجديد للعملات",
+            "يا الله اذا السعر يطلع بدي أضحك من الفرح 😁",
+            "هل فيه حد عنده فكرة عن البوتات الأخرى؟",
+            "حلو لو في خانة تجارب المستخدمين",
+            "من السعودية: يا ريت تعطونا درس سريع اليوم 🇸🇦",
+            "يا جماعة شرايكم أرفع اللوت شوي？",
+            "حد يضمن الربح؟ لا، لا أحد يضمن 😅",
+            "شباب، كيف أفعّل التحقق الثنائي؟",
+            "في مشكلة بالـKYC عندي، أحد يساعد؟",
+            "اهدي يا ناس، السوق يحتاج عقلانية 😌",
+            "واو، إشعار الربح خلاني أصحو من النوم 😴➡️😄",
+            "حد يرسل لي شرح مختصر عن المارجن？",
+            "يا رب يصير سحب اليوم قبل الويكند 🙏",
+            "يلا كل واحد يشارك نصيحة للمبتدئين",
+            "هههههه التعليقات هنا أحلى من التيليجرام 😂",
+            "يا شباب، شنو عملتوا لما خسرتوا أول مرة？",
+            "قوموا صوّتوا على أفضل توصية اليوم 👍",
+            "منورين من الشام، أي نصيحة للرافعة؟ 🇸🇾🇱🇧",
+            "يا أخي الواجهة خفّت عليّ وقت التداول ⏱️",
+            "واحد منكم يستخدم روبات تحتوي باكتيست？",
+            "شباب، مين يريد تجربة إشارة مجانية？",
+            "لازم نراعي إدارة رأس المال، هذا الأهم",
+            "الصوت المكثف يزعجني خلّوه هادي",
+            "يا سلام، الدعم سريع اليوم 😍",
+            "لمن يسأل عن التوصية: خلّها قصيرة وواضحة",
+            "والله لو نضيف Sticker للكدب والضحك 😂",
+            "توني حاط أمر وقف/ربح وانفجر السعر 🙄",
+            "هههههه رد من الدعم: \"جارٍ المساعدة\" 😂",
+            "شباب، في من يشرحلي الفرق بين LIMIT و MARKET？",
+            "منورين، حبيت ميزة السجل التفصيلي",
+            "يا ويلكم لو تستمر الرافعة العالية 😬",
+            "توقّعوني بعد 10 دقائق أشارك نتيجة الصفقه",
+            "لا تأسفون على قليل الربح، المهم الاستمرارية",
+            "منورين من ليبيا 🇱🇾 أي نصائح لكم？",
+            "وين رابط تحميل تطبيق الموبايل？",
+            "يا شباب التايم فريم 5دق يشتغل معي كويس",
+            "حد يبعث لي شرح سريع عن الـRSI？",
+            "والله لو تكون هناك غرفة صوتية نسمع أصوات الناس 🎧",
+            "شباب، هل البوت يأخذ عمولة من الأرباح？",
+            "صدقوني التجربة أفضل مع خطة واضحة",
+            "يا رب الواحد يتعلم من الخساير بسرعة 💪",
+            "من مصر: سلام، خلّونا نبدأ بنجرب دلوقتي 🇪🇬",
+            "يا ناس، توصيات يومية أم اسبوعية؟ شنو أفضل？",
+            "هههههه \"ياهوو\" صوت التنبيه كل دقيقة 😆",
+            "عندي سؤال: كيف أغير البريد？",
+            "لا تنسون تسوون باك اب لكلمة السر 🔐",
+            "والله لو في ميزة محاكي لليوم الواحد كان حلو",
+            "شباب، أي حد يستخدم مؤشرات هارمونيك？",
+            "يلا اللي ربح اليوم يكتب رقم بسيط يكفي يفرّحنا",
+            "منورين، شفتوا الرسالة الجديدة عن التحديث？",
+            "يا الله اذا نزل السحب بتكون فرحة العمر 😅",
+            "حد يبعث نصائح للحد من الانفعالات？",
+            "يا أخي، البوت فتح صفقة في ساعة النوم 😴🔔",
+            "منورين يا أحلى مجتمع تداول 💪",
+            "أي واحد عنده تجربة سحب عبر العملة الرقمية？",
+            "واااه، التعليقات الطويلة تضيع التركيز 🙈",
+            "حلو لو نعمل تصويت: من اللي يستثمر طويل أم قصير？",
+            "توني فتحت صفقة صغيرة لاختبار الخدمة",
+            "شباب، هل فيه خصم على الرسوم للمشتركين？",
+            "يا ريت لو في قسم خاص للأخطاء الشائعة",
+            "نحتاج قناة صوتية للمتابعة الحية",
+            "منورين من تونس 🇹🇳 أحد عنده استراتيجيات للهبوط？",
+            "يا سلام التحديث الأخير حل مشكلة التأخير 👏",
+            "يلا كل واحد يشارك فشله وتعليمه منه",
+            "هههههه ردودكم تحلي الحلبة 😂",
+            "شباب معي سؤال عن أرباح الليلة، هل تُحتسب فوراً？",
+            "لا تنسون تعملون فحص أمان دوري 🔍",
+            "يا جماعة أي مؤشر تحبون أكثر？ MACD ولا RSI？",
+            "توني حولت مبلغ تجريبي واشتغلت الأمور تمام",
+            "يا حبيبي لما السعر يصعد وانا ما دخلت😭",
+            "منورين من الأردن 🇯🇴، وين نصائحكم للرافعة？",
+            "خلّونا نحط قوانين للمحادثة بسيطة وواضحة",
+            "صوت الإشعار خلي الناس تصّحى من النوم 😂🔔",
+            "أي واحد يستخدم نظام نسخ الصفقات؟ كيف النتائج？",
+            "يا ريت لو نضيف فلتر للروبع اللي يخلي الجو مرتب",
+            "لا تتابعوا العواطف، اتبعوا الخطة بس 😉",
+            "شباب، ايش رايكم نعمل ورشة صغيرة نهاية الأسبوع？",
+            "منورين، شنو أفضل زوج عملات اليوم？",
+            "هههههه رد: \"أنا ناسي كلمة السر\" 😅",
+            "يا ريت لو نحط تحذير قبل الصفقات الكبيرة",
+            "خلّوني أجرب توصية وأرجع أقول شنو صار",
+            "يا الله لو الميزات تتحدث بشكل يومي كان أحلى",
+            "توني أستخدم تنبيهات السعر، ممتازة وصارت توصلني بسرعة",
+            "شباب، هل في خاصية لحفظ الشارتات？",  "شباب، هل في خاصية لحفظ الشارتات？",
+            "يلا سلام، برجع لاحقاً أشارك النتيجة ✌️"
+        ];
+
+        // إعدادات التبديل
+        function toggleSetting(settingType) {
+            const icon = document.getElementById(`${settingType}-icon`);
+            const checkbox = document.getElementById(`${settingType}-checkbox`);
+            
+            // تبديل حالة الخيار
+            checkbox.checked = !checkbox.checked;
+            
+            // تحديث مظهر الأيقونة
+            if (checkbox.checked) {
+                icon.classList.add('active');
+                icon.style.color = '#10b981';
+            } else {
+                icon.classList.remove('active');
+                icon.style.color = '#6b7280';
+            }
+            
+            // تحديث التبديل المرئي
+            const toggle = checkbox.nextElementSibling;
+            if (checkbox.checked) {
+                toggle.classList.add('peer-checked:bg-emerald-500');
+            } else {
+                toggle.classList.remove('peer-checked:bg-emerald-500');
+            }
+        }
+
+        // Modal Functions
+        function showTradeModal() {
+            document.getElementById('trade-modal').classList.remove('hidden');
+            calculateProfit();
+        }
+
+        function closeModal() {
+            document.getElementById('trade-modal').classList.add('hidden');
+        }
+
+        function showSettingsModal() {
+            closeModal();
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function showDepositModal() {
+            closeSettingsModal();
+            // تحديث المبلغ في نافذة الإيداع
+            document.getElementById('deposit-amount').textContent = '$' + investmentAmount.toLocaleString();
+            document.getElementById('deposit-modal').classList.remove('hidden');
+        }
+
+        function closeDepositModal() {
+            document.getElementById('deposit-modal').classList.add('hidden');
+        }
+
+        function backToSettings() {
+            closeDepositModal();
+            showSettingsModal();
+        }
+
+        function confirmDeposit() {
+            closeDepositModal();
+            // تحديث المعلومات في نافذة النجاح
+            document.getElementById('success-amount').textContent = '$' + investmentAmount.toLocaleString();
+            document.getElementById('success-period').textContent = selectedPeriod + ' أيام';
+            document.getElementById('success-strategy').textContent = 
+                selectedStrategy === 'conservative' ? 'محافظة' : 
+                selectedStrategy === 'balanced' ? 'متوازنة' : 'عدوانية';
+            
+            document.getElementById('success-modal').classList.remove('hidden');
+        }
+
+        function closeAllModals() {
+            document.getElementById('success-modal').classList.add('hidden');
+        }
+
+        function updateAmount(value) {
+            investmentAmount = Math.min(100000, Math.max(100, value));
+            document.getElementById('amount-input').value = investmentAmount;
+            calculateProfit();
+        }
+
+        function selectPeriod(days) {
+            selectedPeriod = days;
+            calculateProfit();
+        }
+
+        function selectStrategy(strategy) {
+            selectedStrategy = strategy;
+            
+            // تحديث الواجهة
+            document.querySelectorAll('.setting-option').forEach(option => {
+                option.classList.remove('active');
+                option.querySelector('i').classList.remove('fa-check-circle', 'text-emerald-400');
+                option.querySelector('i').classList.add('fa-circle', 'text-gray-400');
+            });
+            
+            event.currentTarget.classList.add('active');
+            event.currentTarget.querySelector('i').classList.remove('fa-circle', 'text-gray-400');
+            event.currentTarget.querySelector('i').classList.add('fa-check-circle', 'text-emerald-400');
+        }
+
+        function calculateProfit() {
+            if(!selectedPeriod) return;
+            const dailyRate = rates[selectedPeriod];
+            const dailyProfit = investmentAmount * (dailyRate / 100);
+            const totalProfit = dailyProfit * selectedPeriod;
+            const totalReturn = investmentAmount + totalProfit;
+            
+            document.getElementById('projected-profit').textContent = 
+                `$${totalReturn.toLocaleString('en-US', {maximumFractionDigits: 2})}`;
+        }
+
+        function copyAddress() {
+            const address = document.getElementById('trc-address').textContent;
+            navigator.clipboard.writeText(address);
+            alert('تم نسخ العنوان إلى الحافظة!');
+        }
+
+        // Live Activities
+        const generateTrade = () => {
+            const randomTrade = tradingData[Math.floor(Math.random() * tradingData.length)];
+            const time = new Date().toLocaleTimeString('ar-EG');
+
+            return `
+                <div class="trade-item bg-slate-700/50 p-3 rounded-lg">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <span class="exchange-badge ${randomTrade.exchange}">${randomTrade.exchange}</span>
+                            <span class="font-bold">${randomTrade.pair}</span>
+                            <span class="sideway-indicator" title="Sideways"></span>
+                        </div>
+                        <span class="text-gray-300 font-bold">${randomTrade.change}%</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-300">
+                        <span>حالة السوق: جانبي</span>
+                        <span>${time}</span>
+                    </div>
+                </div>
+            `;
+        };
+
+        const generateProfit = () => {
+            const profit = (Math.random() * 1000 + 50).toFixed(2);
+            const percentage = (Math.random() * 15 + 5).toFixed(2);
+            const time = new Date().toLocaleTimeString('ar-EG');
+            const userId = Math.floor(Math.random() * 999) + 1;
+
+            return `
+                <div class="trade-item bg-slate-700/50 p-3 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <i class="fas fa-user text-emerald-400"></i>
+                            <span class="font-bold">user${userId}</span>
+                        </div>
+                        <span class="text-emerald-400 font-bold">+$${profit}</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-300 mt-2">
+                        <span>${percentage}% ربح</span>
+                        <span>${time}</span>
+                    </div>
+                </div>
+            `;
+        };
+
+        function updateActivities() {
+            const liveTradesContainer = document.getElementById('live-trades');
+            const recentProfitsContainer = document.getElementById('recent-profits');
+
+            liveTradesContainer.insertAdjacentHTML('afterbegin', generateTrade());
+            recentProfitsContainer.insertAdjacentHTML('afterbegin', generateProfit());
+
+            if (liveTradesContainer.children.length > 5) {
+                liveTradesContainer.removeChild(liveTradesContainer.lastChild);
+            }
+            if (recentProfitsContainer.children.length > 5) {
+                recentProfitsContainer.removeChild(recentProfitsContainer.lastChild);
+            }
+        }
+
+        // Chat System
+        let isChatOpen = false;
+
+        function toggleChat() {
+            const chatBody = document.getElementById('chat-body');
+            isChatOpen = !isChatOpen;
+            chatBody.classList.toggle('hidden');
+        }
+
+        function addRandomMessage() {
+            const chatContainer = document.getElementById('chat-messages');
+            const userId = Math.floor(Math.random() * 999) + 1;
+            const message = arabicComments[Math.floor(Math.random() * arabicComments.length)];
+            const time = new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
+            
+            const messageHTML = `
+                <div class="mb-3">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="font-bold text-emerald-300">user${userId}</span>
+                        <span class="text-xs text-gray-400">${time}</span>
+                    </div>
+                    <div class="text-sm bg-slate-700/50 p-2 rounded-lg">${message}</div>
+                </div>
+            `;
+            
+            chatContainer.insertAdjacentHTML('beforeend', messageHTML);
+            
+            if (chatContainer.children.length > 8) {
+                chatContainer.removeChild(chatContainer.firstChild);
+            }
+            
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                const chatContainer = document.getElementById('chat-messages');
+                const time = new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
+                
+                const messageHTML = `
+                    <div class="mb-3">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-green-300">أنت</span>
+                            <span class="text-xs text-gray-400">${time}</span>
+                        </div>
+                        <div class="text-sm bg-emerald-500/20 p-2 rounded-lg border-r-2 border-emerald-400">${message}</div>
+                    </div>
+                `;
+                
+                chatContainer.insertAdjacentHTML('beforeend', messageHTML);
+                input.value = '';
+                
+                if (chatContainer.children.length > 8) {
+                    chatContainer.removeChild(chatContainer.firstChild);
+                }
+                
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize amount input
+            document.getElementById('amount-input').addEventListener('input', (e) => {
+                updateAmount(parseInt(e.target.value) || 1000);
+            });
+
+            // Initialize with some activities
+            for (let i = 0; i < 5; i++) {
+                updateActivities();
+            }
+            
+            // Update activities every 4 seconds
+            setInterval(updateActivities, 4000);
+            
+            // Initialize chat messages
+            for (let i = 0; i < 4; i++) {
+                addRandomMessage();
+            }
+            setInterval(addRandomMessage, 5000);
+
+            // Online users count
+            setInterval(() => {
+                document.getElementById('online-count').textContent = 
+                    Math.floor(Math.random() * 30) + 70;
+            }, 10000);
+
+            // Initialize profit calculation
+            calculateProfit();
+        });
+    </script>
+</body>
+</html>
